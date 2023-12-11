@@ -11,7 +11,7 @@ import "./InterestRateModel.sol";
 contract WhitePaperInterestRateModel is InterestRateModel {
     event NewInterestParams(uint baseRatePerBlock, uint multiplierPerBlock);
 
-    uint256 private constant BASE = 1e18;
+    uint256 private constant BASE = 40e18; //Growing interest rate from 1% to a base of 40%
 
     /**
      * @notice The approximate number of blocks per year that is assumed by the interest rate model
