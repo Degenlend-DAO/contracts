@@ -21,6 +21,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "bignumber.js": "9.0.0",
+    "hardhat": "^2.19.4",
     "jest-diff": "^26.4.2",
     "jest-junit": "^11.1.0",
     "prettier": "^1.19.0",
