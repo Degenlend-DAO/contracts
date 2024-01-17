@@ -49,3 +49,7 @@ node_modules_tmp
 
 # Contract Artifacts
 contracts/
+
+# Dependency Lock files
+yarn.lock
+package-lock.json
