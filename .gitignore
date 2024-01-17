@@ -43,3 +43,9 @@ junit.xml
 .saddle_history
 node_modules_tmp
 .idea
+
+# Local Netlify folder
+.netlify
+
+# Contract Artifacts
+contracts/
