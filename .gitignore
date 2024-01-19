@@ -48,7 +48,7 @@ node_modules_tmp
 .netlify
 
 # Contract Artifacts
-contracts/
+contracts/artifacts
 
 # Dependency Lock files
 yarn.lock
