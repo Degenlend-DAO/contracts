@@ -3,6 +3,7 @@
   "version": "0.2.1",
   "description": "The Compound Money Market",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "compile": "./script/compile",
     "console": "if node -v | grep -E \"v(12|13)\" > /dev/null; then flags=\"-n --experimental-repl-await\"; fi; npx $flags saddle console",
