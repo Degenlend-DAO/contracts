@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 pragma solidity ^0.8.10;
 
-import "../../contracts/Governance/Comp.sol";
+import "../../contracts/Governance/Degen.sol";
 
-contract CompScenario is Comp {
+contract CompScenario is Degen {
     constructor(address account) Comp(account) {}
 
     function transferScenario(address[] calldata destinations, uint256 amount) external returns (bool) {
