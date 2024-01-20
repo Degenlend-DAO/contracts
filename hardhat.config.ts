@@ -10,12 +10,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const solcVersion = "0.8.19"
+
 const config: HardhatUserConfig = {
   networks: {
     hardhat: {},
     sx_testnet: {
       url: "https://rpc.sx.technology/",
-      accounts: [ `${process.env.C4ACCOUNT}` ]
+      accounts: [ `${process.env.C4ACCOUNT}` ],
+      chainId: 617
     },
     sx_mainnet: {
       url: "",
@@ -23,7 +26,7 @@ const config: HardhatUserConfig = {
     }
   },
   solidity: {
-    version: "0.8.19",
+    version: solcVersion,
     settings: {
       optimizer: {
         enabled: true,
