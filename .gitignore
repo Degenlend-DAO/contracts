@@ -54,3 +54,6 @@ artifacts/*
 # Dependency Lock files
 yarn.lock
 package-lock.json
+
+# Ignition
+ignition/*
