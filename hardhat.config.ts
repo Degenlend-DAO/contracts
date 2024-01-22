@@ -16,12 +16,12 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {},
     sx_testnet: {
-      url: "https://rpc.sx.technology/",
+      url: "https://rpc.toronto.sx.technology/",
       accounts: [ `${process.env.C4ACCOUNT}` ],
-      chainId: 617
+      chainId: 647
     },
     sx_mainnet: {
-      url: "",
+      url: "https://rpc.sx.technology/",
       accounts: [ `${process.env.C4ACCOUNT}` ]
     }
   },
