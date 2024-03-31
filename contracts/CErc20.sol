@@ -13,6 +13,9 @@ interface CompLike {
  * @author Compound
  */
 contract CErc20 is CToken, CErc20Interface {
+
+    address public feeTo; // Fee reciever
+
     /**
      * @notice Initialize the new money market
      * @param underlying_ The address of the underlying asset
@@ -47,6 +50,7 @@ contract CErc20 is CToken, CErc20Interface {
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
     function mint(uint mintAmount) override external returns (uint) {
+        _mintFee(underlying, mintAmount * 2/10);
         mintInternal(mintAmount);
         return NO_ERROR;
     }
@@ -135,6 +139,22 @@ contract CErc20 is CToken, CErc20Interface {
      */
     function _addReserves(uint addAmount) override external returns (uint) {
         return _addReservesInternal(addAmount);
+    }
+
+    /**
+     * @notice A function that collects a portion of the tokens deposited as a minting fee
+     * 
+     */
+    function _mintFee(address underlying , uint amount) public {
+        EIP20Interface token = EIP20Interface(underlying);
+        require(address(token) == underlying, "CERC20 can only collect fees from underlying token!");
+        token.transfer(feeTo, amount);
+    }
+
+
+    function setFeeTo(address _feeTo) external {
+        require(msg.sender == admin, 'Only the Admin can set the feeTo!');
+        feeTo = _feeTo;
     }
 
     /*** Safe Token ***/
