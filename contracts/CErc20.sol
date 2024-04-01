@@ -50,7 +50,7 @@ contract CErc20 is CToken, CErc20Interface {
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
     function mint(uint mintAmount) override external returns (uint) {
-        _mintFee(underlying, mintAmount * 2/10);
+        _mintFee(underlying, mintAmount * 1/5); // Mint fee is 0.2%
         mintInternal(mintAmount);
         return NO_ERROR;
     }
