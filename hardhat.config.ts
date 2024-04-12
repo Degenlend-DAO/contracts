@@ -10,7 +10,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-const solcVersion = "0.8.19"
+const solcVersion = "0.8.24"
 
 const config: HardhatUserConfig = {
   networks: {

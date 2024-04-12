@@ -15,6 +15,7 @@ interface CompLike {
 contract CErc20 is CToken, CErc20Interface {
 
     address public feeTo; // Fee reciever
+    uint private mintFee;
 
     /**
      * @notice Initialize the new money market
@@ -50,7 +51,7 @@ contract CErc20 is CToken, CErc20Interface {
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
     function mint(uint mintAmount) override external returns (uint) {
-        _mintFee(underlying, mintAmount * 1/5); // Mint fee is 0.2%
+        _mintFee(underlying, mintAmount * 1/40); // Mint fee is 2.5%
         mintInternal(mintAmount);
         return NO_ERROR;
     }
