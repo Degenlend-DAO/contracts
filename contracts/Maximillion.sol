@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 pragma solidity ^0.8.10;
 
-import "./CEther.sol";
+import "./libraries/money_markets/CEther.sol";
 
 /**
  * @title Compound's Maximillion Contract

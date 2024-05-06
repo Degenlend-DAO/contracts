@@ -3,8 +3,8 @@ pragma solidity ^0.8.10;
 
 import "../CErc20.sol";
 import "../CToken.sol";
-import "../PriceOracle.sol";
-import "../EIP20Interface.sol";
+import "../libraries/PriceOracle.sol";
+import "../interfaces/EIP20Interface.sol";
 import "../Governance/Degen.sol";
 
 interface ComptrollerLensInterface {
