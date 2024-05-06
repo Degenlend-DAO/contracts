@@ -7,7 +7,7 @@ import "../../libraries/PriceOracle.sol";
 import "../../interfaces/ComptrollerInterface.sol";
 import "./ComptrollerStorage.sol";
 import "../../Unitroller.sol";
-import "../../Governance/Degen.sol";
+import "../../DAO Token/Degen.sol";
 
 /**
  * @title Compound's Comptroller Contract
