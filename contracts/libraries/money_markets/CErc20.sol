@@ -15,7 +15,7 @@ interface CompLike {
 contract CErc20 is CToken, CErc20Interface {
 
     address public feeTo; // Fee reciever
-    uint private mintFee;
+    uint public mintFee;
 
     /**
      * @notice Initialize the new money market
