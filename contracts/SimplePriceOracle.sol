@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "./libraries/PriceOracle.sol";
+import "./libraries/money_markets/CToken.sol";
 import "./libraries/money_markets/CErc20.sol";
 
 contract SimplePriceOracle is PriceOracle {
