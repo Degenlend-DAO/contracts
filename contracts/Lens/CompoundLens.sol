@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 pragma solidity ^0.8.10;
 
-import "../CErc20.sol";
-import "../CToken.sol";
+import "../libraries/money_markets/CErc20.sol";
+import "../libraries/money_markets/CToken.sol";
 import "../libraries/PriceOracle.sol";
 import "../interfaces/EIP20Interface.sol";
-import "../Governance/Degen.sol";
+import "../DAO Token/Degen.sol";
 
 interface ComptrollerLensInterface {
     function markets(address) external view returns (bool, uint);
