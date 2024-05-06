@@ -10,7 +10,7 @@ import "../../Unitroller.sol";
 import "../../DAO Token/Degen.sol";
 
 /**
- * @title Compound's Comptroller Contract
+ * @title Compound's Comptroller Contract -- editor's note ( this is very good stuff! )
  * @author Compound
  */
 contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
