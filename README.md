@@ -20,3 +20,5 @@ Addresses:
   "priceOracle#SimplePriceOracle": "0x6ca684b4773aF95AB5AE8d0aB7bA078237536DDF",
 
   "sxInterestRateModel#JumpRateModelV2": "0xe5ADAbf78627cE464FaceE2970D0b71c0a525038"
+
+  "SimplePriceOracle#SimplePriceOracle" - "0x97F1Ffc1139e742c1A5A4B80847687C736752988"
