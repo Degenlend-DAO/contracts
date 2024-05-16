@@ -40,6 +40,9 @@ contract CErc20 is CToken, CErc20Interface {
         // Set underlying and sanity check it
         underlying = underlying_;
         EIP20Interface(underlying).totalSupply();
+
+        // This is the mint fee
+        // mintFee = 5/2; (2.5%)
     }
 
     /*** User Interface ***/
@@ -51,7 +54,7 @@ contract CErc20 is CToken, CErc20Interface {
      * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
      */
     function mint(uint mintAmount) override external returns (uint) {
-        _mintFee(underlying, mintAmount * 1/40); // Mint fee is 2.5%
+        _mintFee(underlying, (mintAmount * 5)/2); // Mint fee is 2.5% see line 45
         mintInternal(mintAmount);
         return NO_ERROR;
     }
@@ -144,7 +147,7 @@ contract CErc20 is CToken, CErc20Interface {
 
     /**
      * @notice A function that collects a portion of the tokens deposited as a minting fee
-     * 
+     * @param underlying, amount 
      */
     function _mintFee(address underlying , uint amount) public {
         EIP20Interface token = EIP20Interface(underlying);
