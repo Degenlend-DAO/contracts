@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 pragma solidity ^0.8.10;
 
-import "./CToken.sol";
-import "./libraries/PriceOracle.sol";
+import "../money_markets/CToken.sol";
+import "../PriceOracle.sol";
 
 contract UnitrollerAdminStorage {
     /**
