@@ -60,3 +60,5 @@ package-lock.json
 
 # Ignition
 ignition/deployments/*
+
+.deploys/*
