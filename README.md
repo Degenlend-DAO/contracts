@@ -15,9 +15,9 @@ Addresses:
 
   "cUSDC#CErc20Immutable": "0xc53105aB43De1e9Fa81C5333eC7B3A2cC65004F4", // Deprecated
 
-  "degenUSDC#CErc20Immutable": "0xC863E82CD46296F1F81C63cDEB3708505B5b0d97", // Deprecated
+  "degenUSDC#CErc20Immutable": "0xC863E82CD46296F1F81C63cDEB3708505B5b0d97", // Current
 
-  "degenWSX#CErc20Immutable": "0x5cB7786A478eEc37Da5F6EA2e946cD860E784743", // Deprecated
+  "degenWSX#CErc20Immutable": "0x5cB7786A478eEc37Da5F6EA2e946cD860E784743", // Current
 
   "priceOracle#SimplePriceOracle": "0x6ca684b4773aF95AB5AE8d0aB7bA078237536DDF", // Deprecated
 
