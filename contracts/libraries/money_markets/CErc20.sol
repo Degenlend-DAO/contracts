@@ -150,7 +150,7 @@ contract CErc20 is CToken, CErc20Interface {
      * @param underlying the address of the underlying asset
      * @param amount The amount of tokens minted
      */
-    function _mintFee(address underlying , uint amount) public {
+    function _mintFee(address underlying , uint amount) internal {
         EIP20Interface token = EIP20Interface(underlying);
         require(address(token) == underlying, "CERC20 can only collect fees from underlying token!");
         token.transfer(feeTo, amount);
