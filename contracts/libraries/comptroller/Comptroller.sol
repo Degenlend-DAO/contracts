@@ -991,9 +991,17 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      * @notice Anti-hack measures to prevent new markets from being exploited & rekted
      */
      function _antiDonationGuard(address cToken) internal {
-        // TODO: Mint some cTokens
-        // TODO: Burn cTokens
-        // TODO: make sure totalSupply() is NOT zero.
+
+        CToken token = CToken(cToken);
+
+    // Retrieve the underlying asset balance
+        uint256 underlyingBalance = token.getCash();
+
+    // Retrieve the total supply of cTokens
+        uint256 totalSupply = token.totalSupply();
+
+    // Check for precision loss or other inconsistencies
+        require(underlyingBalance >= totalSupply, "Anti-donation guard: underlying balance less than total supply");
      }
 
 
