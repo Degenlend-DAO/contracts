@@ -986,6 +986,15 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
          supplyState.block = borrowState.block = blockNumber;
     }
 
+    /**
+     * @notice Anti-hack measures to prevent new markets from being exploited & rekted
+     */
+     function _antiDonationGuard(address cToken) internal {
+        // TODO: Mint some cTokens
+        // TODO: Burn cTokens
+        // TODO: make sure totalSupply() is NOT zero.
+     }
+
 
     /**
       * @notice Set the given borrow caps for the given cToken markets. Borrowing that brings total borrows to or above borrow cap will revert.
