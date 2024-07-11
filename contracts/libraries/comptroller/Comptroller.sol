@@ -948,6 +948,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         _addMarketInternal(address(cToken));
         _initializeMarket(address(cToken));
+        _antiDonationGuard(address(cToken));
 
         emit MarketListed(cToken);
 
