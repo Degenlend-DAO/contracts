@@ -147,7 +147,8 @@ contract CErc20 is CToken, CErc20Interface {
 
     /**
      * @notice A function that collects a portion of the tokens deposited as a minting fee
-     * @param underlying, amount 
+     * @param underlying
+     * @param amount The amount of tokens minted
      */
     function _mintFee(address underlying , uint amount) public {
         EIP20Interface token = EIP20Interface(underlying);
@@ -157,7 +158,7 @@ contract CErc20 is CToken, CErc20Interface {
 
 
     function setFeeTo(address _feeTo) external {
-        require(msg.sender == admin, 'Only the Admin can set the feeTo!');
+        require(msg.sender == admin, "Only the Admin can set the feeTo!");
         feeTo = _feeTo;
     }
 
