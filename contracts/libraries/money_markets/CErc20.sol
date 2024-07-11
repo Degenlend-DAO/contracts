@@ -147,7 +147,7 @@ contract CErc20 is CToken, CErc20Interface {
 
     /**
      * @notice A function that collects a portion of the tokens deposited as a minting fee
-     * @param underlying
+     * @param underlying the address of the underlying asset
      * @param amount The amount of tokens minted
      */
     function _mintFee(address underlying , uint amount) public {
