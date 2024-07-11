@@ -34,3 +34,16 @@ Addresses:
    https://www.comp.xyz/t/hundred-finance-exploit-and-compound-v2/4266 -- Hundred Finance Exploit
 
    https://defihacklabs.substack.com/p/solidity-security-lesson-2-first -- Exploit & Fix (Initial Deposit Exploit)
+
+   TLDR: 
+   For enhanced security, Compound V2 forks should mint and then burn a number of cTokens when opening new markets, initially setting the collateral factor to zero to maintain a non-zero total supply, and subsequently adjusting the collateral factor to the desired level.
+
+   
+
+   FINAL Implementations (SX Testnet):
+
+   Comptroller: 
+
+   Simple Price Oracle: 0x97F1Ffc1139e742c1A5A4B80847687C736752988
+
+   SX Interest Rate Model: 0xe5ADAbf78627cE464FaceE2970D0b71c0a525038
