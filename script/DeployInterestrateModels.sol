@@ -7,9 +7,7 @@ contract DeployInterestRateModels {
     JumpRateModelV2 public usdcRateModel;
     JumpRateModelV2 public wsxRateModel;
 
-    constructor() {
-        address owner = msg.sender; // Assuming the deployer is the owner
-
+    constructor(address owner) {
         // USDC Jump Rate Model
         uint baseRatePerYear = 0; // 0%
         uint multiplierPerYear = 5e16; // 5% per year (5 * 1e16)

@@ -8,11 +8,14 @@ contract DeployScript is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
+        // Get deployer's address from the private key
+        address deployerAddress = vm.addr(deployerPrivateKey);
+
         // Start broadcast of transaction using deployer’s private key
         vm.startBroadcast(deployerPrivateKey);
 
-        // Deploy the contract
-        DeployInterestRateModels deployer = new DeployInterestRateModels();
+        // Deploy the interest rate models with the deployer address as the owner
+        DeployInterestRateModels deployer = new DeployInterestRateModels(deployerAddress);
 
         // Print the addresses of the deployed rate models
         console.log("USDC Rate Model deployed at:", address(deployer.usdcRateModel()));
