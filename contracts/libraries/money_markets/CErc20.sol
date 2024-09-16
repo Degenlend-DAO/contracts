@@ -158,19 +158,19 @@ contract CErc20 is CToken, CErc20Interface {
 
     /**
      * @notice A public function to sweep accidental ERC-20 transfers to this contract. Tokens are sent to admin (timelock)
-     * @param token The address of the ERC-20 token to sweep
+     * @param sweepToken The address of the ERC-20 token to sweep
      */
-    function sweepToken(EIP20NonStandardInterface token) external override {
+    function sweepToken(EIP20NonStandardInterface sweepToken) external override {
         require(
             msg.sender == admin,
             "CErc20::sweepToken: only admin can sweep tokens"
         );
         require(
-            address(token) != underlying,
+            address(sweepToken) != underlying,
             "CErc20::sweepToken: can not sweep underlying token"
         );
-        uint256 balance = token.balanceOf(address(this));
-        token.transfer(admin, balance);
+        uint256 balance = sweepToken.balanceOf(address(this));
+        sweepToken.transfer(admin, balance);
     }
 
     /**
@@ -185,7 +185,7 @@ contract CErc20 is CToken, CErc20Interface {
     /**
      * @notice A function that collects a portion of the tokens deposited as a minting fee
      * @param underlying the address of the underlying asset
-     * @param amount The amount of tokens minted
+     * @param mintAmount The amount of tokens minted
      */
     function _mintFee(address underlying, uint mintAmount) internal {
         uint fee = (mintAmount * mintFeeBps) / 10000; // Calculate fee in basis points
@@ -231,8 +231,8 @@ contract CErc20 is CToken, CErc20Interface {
      * @return The quantity of underlying tokens owned by this contract
      */
     function getCashPrior() internal view virtual override returns (uint) {
-        EIP20Interface token = EIP20Interface(underlying);
-        return token.balanceOf(address(this));
+        EIP20Interface underlyingToken = EIP20Interface(underlying);
+        return underlyingToken.balanceOf(address(this));
     }
 
     /**
