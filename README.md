@@ -1,5 +1,4 @@
 # DegenLend Protocol
-=================
 
 
 The **DegenLend Protocol** is a decentralized finance (DeFi) protocol built on the SX Network. It allows users to **supply** assets (Ether or ERC-20 tokens) to earn interest or **borrow** assets by using their supplied assets as collateral. The protocol achieves this by using **cToken** contracts, which represent claims to supplied assets and generate interest based on the algorithmically set interest rates. Users can interact with these contracts to manage their loans and collateral. This system is largely inspired by Compound V2.
