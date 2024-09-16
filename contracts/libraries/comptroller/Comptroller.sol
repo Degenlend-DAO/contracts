@@ -8,12 +8,17 @@ import "../../interfaces/ComptrollerInterface.sol";
 import "./ComptrollerStorage.sol";
 import "./Unitroller.sol";
 import "../../DAO Token/Degen.sol";
+import "../../interfaces/IERC20.sol";
 
 /**
  * @title Compound's Comptroller Contract -- editor's note ( this is very good stuff! )
  * @author Compound
  */
 contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerErrorReporter, ExponentialNoError {
+    
+    /// @notice Emitted when a donation check fails
+    event AntiDonationCheckFailed(address indexed cToken, uint underlyingBalance, uint totalSupply);
+    
     /// @notice Emitted when an admin supports a market
     event MarketListed(CToken cToken);
 
@@ -85,6 +90,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     // No collateralFactorMantissa may exceed this value
     uint internal constant collateralFactorMaxMantissa = 0.9e18; // 0.9
+
 
     constructor() {
         admin = msg.sender;
@@ -243,6 +249,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
             return uint(Error.MARKET_NOT_LISTED);
         }
 
+// check for hacks
+            _antiDonationGuard(cToken);
+
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
         distributeSupplierComp(cToken, minter);
@@ -286,6 +295,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
         distributeSupplierComp(cToken, redeemer);
+// Check for hacks
+            _antiDonationGuard(cToken);
 
         return uint(Error.NO_ERROR);
     }
@@ -618,6 +629,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         if (allowed != uint(Error.NO_ERROR)) {
             return allowed;
         }
+// Check for donation hack
+    _antiDonationGuard(cToken);
 
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
@@ -651,8 +664,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
     /**
      * @dev Local vars for avoiding stack-depth limits in calculating account liquidity.
-     *  Note that `cTokenBalance` is the number of cTokens the account owns in the market,
-     *  whereas `borrowBalance` is the amount of underlying that the account has borrowed.
+     *  Note that cTokenBalance is the number of cTokens the account owns in the market,
+     *  whereas borrowBalance is the amount of underlying that the account has borrowed.
      */
     struct AccountLiquidityLocalVars {
         uint sumCollateral;
@@ -990,19 +1003,25 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     /**
      * @notice Anti-hack measures to prevent new markets from being exploited & rekted
      */
-     function _antiDonationGuard(address cToken) internal {
+function _antiDonationGuard(address cToken) internal {
+    // Fetch the underlying token's address
+    address underlyingToken = CToken(cToken).underlying();  // New line: Get the underlying token
 
-        CToken token = CToken(cToken);
+    // Fetch the number of decimals for the underlying token
+    uint8 decimals = IERC20(underlyingToken).decimals();  // New line: Get the decimals of the underlying token
+    
+    // Set tolerance based on decimals (adjust scaling factor)
+    uint tolerance = 10 ** (decimals - 2);  // New line: Set tolerance based on decimals (1% of token precision)
 
-    // Retrieve the underlying asset balance
-        uint256 underlyingBalance = token.getCash();
+    uint underlyingBalance = IERC20(underlyingToken).balanceOf(address(this)); // Existing line
+    uint totalSupply = CToken(cToken).totalSupply(); // Existing line
 
-    // Retrieve the total supply of cTokens
-        uint256 totalSupply = token.totalSupply();
+    if (underlyingBalance + tolerance < totalSupply) {  // Existing line
+        emit AntiDonationCheckFailed(cToken, underlyingBalance, totalSupply);  // Existing line
+        revert("Anti-donation guard: underlying balance less than total supply");  // Existing line
+    }
+}
 
-    // Check for precision loss or other inconsistencies
-        require(underlyingBalance >= totalSupply, "Anti-donation guard: underlying balance less than total supply");
-     }
 
 
     /**
