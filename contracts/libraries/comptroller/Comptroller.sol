@@ -2,9 +2,12 @@
 pragma solidity ^0.8.10;
 
 import "../../libraries/money_markets/CToken.sol";
+import "../../libraries/money_markets/CErc20.sol";
+import "../../interfaces/IERC20.sol";
 import "../../libraries/ErrorReporter.sol";
 import "../../libraries/PriceOracle.sol";
 import "../../interfaces/ComptrollerInterface.sol";
+import "../../interfaces/EIP20Interface.sol";
 import "./ComptrollerStorage.sol";
 import "./Unitroller.sol";
 import "../../DAO Token/Degen.sol";
@@ -1005,16 +1008,16 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
      */
 function _antiDonationGuard(address cToken) internal {
     // Fetch the underlying token's address
-    address underlyingToken = CToken(cToken).underlying();  // New line: Get the underlying token
+    address underlyingToken = CErc20(cToken).underlying();  // New line: Get the underlying token
 
     // Fetch the number of decimals for the underlying token
-    uint8 decimals = IERC20(underlyingToken).decimals();  // New line: Get the decimals of the underlying token
+    uint8 decimals = EIP20Interface(underlyingToken).decimals();  // New line: Get the decimals of the underlying token
     
     // Set tolerance based on decimals (adjust scaling factor)
     uint tolerance = 10 ** (decimals - 2);  // New line: Set tolerance based on decimals (1% of token precision)
 
     uint underlyingBalance = IERC20(underlyingToken).balanceOf(address(this)); // Existing line
-    uint totalSupply = CToken(cToken).totalSupply(); // Existing line
+    uint totalSupply = CErc20(cToken).totalSupply(); // Existing line
 
     if (underlyingBalance + tolerance < totalSupply) {  // Existing line
         emit AntiDonationCheckFailed(cToken, underlyingBalance, totalSupply);  // Existing line
