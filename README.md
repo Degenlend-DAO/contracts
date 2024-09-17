@@ -44,9 +44,13 @@ Here are the key contracts and addresses that make up the DegenLend Protocol. Ea
 
 ## Current Implementations (SX Testnet)
 
-- **Comptroller**: 
-- **Simple Price Oracle**: `0x97F1Ffc1139e742c1A5A4B80847687C736752988`
-- **SX Interest Rate Model**: `0xe5ADAbf78627cE464FaceE2970D0b71c0a525038`
+- **Comptroller**: ``
+- **Unitroller**: ``
+- **Simple Price Oracle**: ``
+- **SX Interest Rate Model**: ``
+- **USDC Interest Rate Model**: ``
+- **Degen USDC**: ``
+- **Degen Wrapped SX**: ``
 
 ### SX Network Testnet Assets:
 - **USDC**: `0x5147891461a7C81075950f8eE6384e019e39ab98`
