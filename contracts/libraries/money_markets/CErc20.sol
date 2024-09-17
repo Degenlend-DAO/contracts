@@ -61,7 +61,9 @@ contract CErc20 is CToken, CErc20Interface {
         // Set underlying and sanity check it
         underlying = underlying_;
         EIP20Interface(underlying).totalSupply();
-
+        
+        token = EIP20Interface(underlying_);
+        
         feeTo = feeReceiver; // Initialize the fee receiver
         mintFeeBps = mintFee; // Set the mint fee basis points
     }
