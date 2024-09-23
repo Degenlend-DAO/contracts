@@ -17,9 +17,6 @@ contract CErc20 is CToken, CErc20Interface {
     uint public mintFeeBps; // Fee percentage in basis points (1 basis point = 0.01%)
     uint public collectedFees; // Internal accounting for batch fee distribution
 
-    // Token interface (assuming an ERC20-compliant interface)
-    EIP20Interface public token;
-
     // Event for transparency
     event MintFeeCollected(
         address indexed underlying,
@@ -45,8 +42,8 @@ contract CErc20 is CToken, CErc20Interface {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address feeReceiver, // Fee receiver address
-        uint mintFee
+        address feeReceiver_, // Fee receiver address
+        uint mintFee_
     ) public {
         // CToken initialize does the bulk of the work
         super.initialize(
@@ -61,11 +58,9 @@ contract CErc20 is CToken, CErc20Interface {
         // Set underlying and sanity check it
         underlying = underlying_;
         EIP20Interface(underlying).totalSupply();
-        
-        token = EIP20Interface(underlying_);
-        
-        feeTo = feeReceiver; // Initialize the fee receiver
-        mintFeeBps = mintFee; // Set the mint fee basis points
+                
+        feeTo = feeReceiver_; // Initialize the fee receiver
+        mintFeeBps = mintFee_; // Set the mint fee basis points
     }
 
     /*** User Interface ***/
@@ -78,8 +73,8 @@ contract CErc20 is CToken, CErc20Interface {
      */
     function mint(uint mintAmount) external override returns (uint) {
         require(mintAmount > 0, "Mint amount must be greater than zero");
-        _mintFee(address(token), mintAmount); // Collect fee
-        mintInternal(mintAmount); // Continue with the mint process
+        mintInternal(mintAmount); // First make a deposit, then
+        _mintFee(underlying, mintAmount); // Collect fee
         return NO_ERROR;
     }
 
@@ -186,12 +181,16 @@ contract CErc20 is CToken, CErc20Interface {
 
     /**
      * @notice A function that collects a portion of the tokens deposited as a minting fee
-     * @param underlying the address of the underlying asset
+     * @param underlying_ the address of the underlying asset
      * @param mintAmount The amount of tokens minted
      */
-    function _mintFee(address underlying, uint mintAmount) internal {
+    function _mintFee(address underlying_, uint mintAmount) internal {
+        EIP20NonStandardInterface token = EIP20NonStandardInterface(
+            underlying_
+        );
         uint fee = (mintAmount * mintFeeBps) / 10000; // Calculate fee in basis points
-        if (fee == 0) return; // Skip fee collection if too small
+
+        require(fee > 0 , "Fee paid is too small!" ); // Replacing small fee collection
         require(fee <= mintAmount, "Fee exceeds mint amount"); // Safety check
         require(
             address(token) == underlying,
@@ -205,6 +204,10 @@ contract CErc20 is CToken, CErc20Interface {
     // Function to distribute the accumulated fees in batches to save gas
     function distributeFees() external {
         require(msg.sender == admin, "Only admin can distribute fees");
+                address underlying_ = underlying;
+        EIP20NonStandardInterface token = EIP20NonStandardInterface(
+            underlying_
+        );
         token.transfer(feeTo, collectedFees); // Transfer the accumulated fees to the fee receiver
         collectedFees = 0; // Reset the collected fees after distribution
     }
