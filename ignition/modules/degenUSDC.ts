@@ -19,8 +19,8 @@ export default buildModule("degenUSDC", (m) => {
         "Degen USDC", // Name
         "degenUSDC", // Symbol
         6, // Decimals (USDC has 6 decimals)
-        "0x4869aF0Aed0a9948f724f809dC0DCcF9885cCe34", // Fee Receiver address
-        250, // Minting fee (2.5% in basis points)
+        // "0x4869aF0Aed0a9948f724f809dC0DCcF9885cCe34", // Fee Receiver address
+        // 250, // Minting fee (2.5% in basis points)
         "0x4869aF0Aed0a9948f724f809dC0DCcF9885cCe34" // Admin address
     ]);
 
