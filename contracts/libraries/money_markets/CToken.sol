@@ -8,6 +8,7 @@ import "../../interfaces/EIP20Interface.sol";
 import "../interest_rates/InterestRateModel.sol";
 import "../ExponentialNoError.sol";
 
+
 /**
  * @title Compound's CToken Contract
  * @notice Abstract base for CTokens
