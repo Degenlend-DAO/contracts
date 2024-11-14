@@ -42,6 +42,7 @@
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@solidity-parser/parser": "^0.13.2",
+    "@types/chai": "^5.0.1",
     "dotenv": "^16.4.5",
     "eth-saddle": "^0.1.25",
     "open-oracle-reporter": "^1.0.2"
