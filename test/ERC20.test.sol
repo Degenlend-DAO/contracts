@@ -1,26 +1,54 @@
 pragma solidity 0.8.10;
 
 import {Test} from "forge-std/Test.sol";
-import {stdError} from "forge-std/StdError.sol";
 import {ERC20} from "../contracts/ERC20.sol";
 
-contract ECR20Test is Test {
+contract ERC20Test is Test {
 
-    ERC20 testToken;
+    event Transfer(address indexed from, address indexed to, uint256 value);
+   
+    event Approval(
+        address indexed owner, address indexed spender, uint256 value
+    );
+
+    ERC20 token;
+    address alice = address(0x123);
+    address bob = address(0x456);
 
     function setUp() public {
-        testToken = new ERC20("TestToken", "TTK", 18);
+        token = new ERC20("Test Token", "TT", 18);
     }
 
-    function test_names() public {
-        assertEq(testToken.name(), "TestToken");
-    }
+    function test_TransferEvent() public {
+        token.mint(alice, 1000);
 
-    function test_approvals() public {
-        // Call approve, and expect the blockchain to emit an 'Approval' Event
-        // vm.expectEmit(true, 0x26B94ffdc8FeEA3cd1DB88F5D8FD1C5A08f52Fa8, 2000);
         vm.expectEmit(true, true, true, true);
-         testToken.approve(0x26B94ffdc8FeEA3cd1DB88F5D8FD1C5A08f52Fa8, 2000);
+        emit Transfer(alice, bob, 500);
+
+        vm.prank(alice);
+        token.transfer(bob, 500);
     }
-    
+
+    function test_ApprovalEvent() public {
+        vm.expectEmit(true, true, true, true);
+        emit Approval(address(this), bob, 1000);
+
+        token.approve(bob, 1000);
+    }
+
+    function test_TransferFromEvent() public {
+        token.mint(alice, 1000);
+
+        // Approve Bob to spend Alice's tokens
+        vm.prank(alice);
+        token.approve(bob, 1000);
+
+        // Expect Transfer event
+        vm.expectEmit(true, true, true, true);
+        emit Transfer(alice, address(this), 500);
+
+        // Perform transferFrom
+        vm.prank(bob);
+        token.transferFrom(alice, address(this), 500);
+    }
 }
