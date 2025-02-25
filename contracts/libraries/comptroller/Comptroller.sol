@@ -298,8 +298,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
         distributeSupplierComp(cToken, redeemer);
-// Check for hacks
-            _antiDonationGuard(cToken);
+        // Check for hacks
+        _antiDonationGuard(cToken);
 
         return uint(Error.NO_ERROR);
     }
@@ -632,8 +632,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         if (allowed != uint(Error.NO_ERROR)) {
             return allowed;
         }
-// Check for donation hack
-    _antiDonationGuard(cToken);
+        // Check for donation hack
+        _antiDonationGuard(cToken);
 
         // Keep the flywheel moving
         updateCompSupplyIndex(cToken);
