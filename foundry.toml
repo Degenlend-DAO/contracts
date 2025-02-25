@@ -3,6 +3,6 @@ src = "./contracts"  # Path to your contracts
 out = "./out"        # Path to the compiled output
 libs = ["lib"]       # Path to external libraries
 tests = "./test"     # Path to your tests
-rpc_url = '${RPC_URL}'
+rpc_url = 'https://rpc.toronto.sx.technology'
 optimizer = true
 optimizer_runs = 200
