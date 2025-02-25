@@ -68,13 +68,52 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
         }
 
-        function test_EnteringAMarket() public {
+        function test_Approvals() public {
+            usdc.approve(); 
+            wsx.approve();
+        }
+
+        function test_EnteringAMarket(amount) public {
             //  Let This contract have the ability to move degenWSX tokens.
 
             //  Check if a project is collateral
 
+            if (address(degenWSX) == comptroller.getAssetsIn(address(this)))
+            {
+                // continue
+            }
+            else {
+                // fail
+            }
+
+            wsx.approve(address(degenWSX), amount)
+            comptroller.enterMarkets([address(degenUSDC), address(degenWSX)])
 
             // Enter / mint assets
+            degenWSX.mint(amount);
+            // check that it was minted
 
+            degenUSDC.mint(amount);
+        }
+
+        function test_WithdrawingLiquidity() public {
+            degenWSX.withdraw(amount);
+            degenUSDC.withdraw(amount);
+        }
+
+        function test_BorrowingAssets() public {
+            degenWSX.borrow(amount);
+            degenUSDC.borrow(amount);
+        }
+
+        function test_RepayAssets() public {
+            degenWSX.repayBorrow(amount)
+            degenUSDC.repayBorrow(amount)
+        }
+
+        function test_ExitMarkets() public {
+            comptroller.exitMarkets(address(degenWSX));
+
+            comptroller.exitMarkets(address(degenUSDC));
         }
     }
