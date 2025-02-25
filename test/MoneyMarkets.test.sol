@@ -4,6 +4,7 @@ import { Test } from "forge-std/Test.sol";
 import "forge-std/console.sol";
 import {stdError} from "forge-std/StdError.sol";
 import { ERC20 } from "../contracts/ERC20.sol";
+import { CToken } from "../contracts/libraries/money_markets/CToken.sol";
 import { CErc20Immutable } from "../contracts/libraries/money_markets/CErc20Immutable.sol";
 import { Comptroller } from "../contracts/libraries/comptroller/Comptroller.sol";
 import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateModelV2.sol";
@@ -77,13 +78,19 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
         function test_Approvals() public {
             uint256 amount = 100;
+            
+            // Expect Approval event with test contract as owner.
+            vm.expectEmit(true, true, false, true);
+            emit Approval(address(this), address(degenUSDC), amount);
             usdc.approve(address(degenUSDC), amount); 
-            wsx.approve(address(degenWSX), amount);
         }
 
         function test_EnteringAMarket() public {
 
             uint256 amount = 100;
+
+            CToken[] memory assetsIn = comptroller.getAssetsIn(address(this));
+
             //  Let This contract have the ability to move degenWSX tokens.
 
             //  Check if a project is collateral
@@ -107,33 +114,41 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
                 comptroller.enterMarkets(marketsWSX);
             }
 
-            // Enter / mint assets
+            // Expect mint to revert (i.e. MintComptrollerRejection)
+            vm.expectRevert();
             degenWSX.mint(amount);
-            // check that it was minted
-
+            vm.expectRevert();
             degenUSDC.mint(amount);
         }
 
         function test_WithdrawingLiquidity() public {
             uint256 amount = 100;
+            // Expect redeem to revert (i.e. RedeemComptrollerRejection)
+            vm.expectRevert();
             degenWSX.redeemUnderlying(amount);
+            vm.expectRevert();
             degenUSDC.redeemUnderlying(amount);
         }
 
         function test_BorrowingAssets() public {
             uint256 amount = 100;
+            // Expect borrow to revert (i.e. BorrowComptrollerRejection)
+            vm.expectRevert();
             degenWSX.borrow(amount);
+            vm.expectRevert();
             degenUSDC.borrow(amount);
         }
 
         function test_RepayAssets() public {
             uint256 amount = 100;
+            // Expect repay to revert (i.e. RepayBorrowComptrollerRejection)
+            vm.expectRevert();
             degenWSX.repayBorrow(amount);
+            vm.expectRevert();
             degenUSDC.repayBorrow(amount);
         }
 
         function test_ExitMarkets() public {
-            uint256 amount = 100;
             comptroller.exitMarket(address(degenWSX));
 
             comptroller.exitMarket(address(degenUSDC));
