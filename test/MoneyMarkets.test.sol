@@ -8,13 +8,17 @@ import { CErc20Immutable } from "../contracts/libraries/money_markets/CErc20Immu
 import { Comptroller } from "../contracts/libraries/comptroller/Comptroller.sol";
 import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateModelV2.sol";
 
+// TODO: Fork it to the sx blockchain to actuall test it.
+// TODO: fix any missing bugs, and we will be done with this phase.
+
     contract MoneyMarketTests is Test {
+        uint256 sxNetworkFork;
         Comptroller comptroller;
         CErc20Immutable degenWSX;
         CErc20Immutable degenUSDC;
         JumpRateModelV2 usdcInterestRate;
         JumpRateModelV2 wsxInterestRate; 
-        ERC20 wSX;
+        ERC20 wsx;
         ERC20 usdc;
         address feeReceiver;
         address admin;
@@ -27,7 +31,10 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
         function setUp() public {
 
-            wSX = new ERC20("Wrapped SX", "WSX", 18); //0x2D4e10Ee64CCF407C7F765B363348f7F62D2E06e
+            sxNetworkFork = vm.createFork('https://rpc.toronto.sx.technology');
+            vm.selectFork(sxNetworkFork); // deploy on sx network
+
+            wsx = new ERC20("Wrapped SX", "WSX", 18); //0x2D4e10Ee64CCF407C7F765B363348f7F62D2E06e
             usdc = new ERC20("USD Coin", "USDC", 6); //0x5147891461a7C81075950f8eE6384e019e39ab98
 
             comptroller = new Comptroller(); //0xB078459124e55Eb9F2937c86c0Ec893ff4FF082b
@@ -53,7 +60,7 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
             
             degenWSX = new CErc20Immutable(
-                address(wSX), // Underlying WSX address
+                address(wsx), // Underlying WSX address
                 comptroller, // Unitroller address (proxy)
                 wsxInterestRate, // WSX interest rate model
                 20000000000000000, // Initial exchange rate (0.02 * 1e18)
@@ -69,25 +76,36 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
         }
 
         function test_Approvals() public {
-            usdc.approve(); 
-            wsx.approve();
+            uint256 amount = 100;
+            usdc.approve(address(degenUSDC), amount); 
+            wsx.approve(address(degenWSX), amount);
         }
 
-        function test_EnteringAMarket(amount) public {
+        function test_EnteringAMarket() public {
+
+            uint256 amount = 100;
             //  Let This contract have the ability to move degenWSX tokens.
 
             //  Check if a project is collateral
 
-            if (address(degenWSX) == comptroller.getAssetsIn(address(this)))
-            {
-                // continue
-            }
-            else {
-                // fail
-            }
+            // if (address(degenWSX) == comptroller.getAssetsIn(  ))
+            // {
+            //     // continue
+            // }
+            // else {
+            //     // fail
+            // }
 
-            wsx.approve(address(degenWSX), amount)
-            comptroller.enterMarkets([address(degenUSDC), address(degenWSX)])
+            {
+                address[] memory marketsUSDC = new address[](1);
+                marketsUSDC[0] = address(degenUSDC);
+                comptroller.enterMarkets(marketsUSDC);
+            }
+            {
+                address[] memory marketsWSX = new address[](1);
+                marketsWSX[0] = address(degenWSX);
+                comptroller.enterMarkets(marketsWSX);
+            }
 
             // Enter / mint assets
             degenWSX.mint(amount);
@@ -97,23 +115,27 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
         }
 
         function test_WithdrawingLiquidity() public {
-            degenWSX.withdraw(amount);
-            degenUSDC.withdraw(amount);
+            uint256 amount = 100;
+            degenWSX.redeemUnderlying(amount);
+            degenUSDC.redeemUnderlying(amount);
         }
 
         function test_BorrowingAssets() public {
+            uint256 amount = 100;
             degenWSX.borrow(amount);
             degenUSDC.borrow(amount);
         }
 
         function test_RepayAssets() public {
-            degenWSX.repayBorrow(amount)
-            degenUSDC.repayBorrow(amount)
+            uint256 amount = 100;
+            degenWSX.repayBorrow(amount);
+            degenUSDC.repayBorrow(amount);
         }
 
         function test_ExitMarkets() public {
-            comptroller.exitMarkets(address(degenWSX));
+            uint256 amount = 100;
+            comptroller.exitMarket(address(degenWSX));
 
-            comptroller.exitMarkets(address(degenUSDC));
+            comptroller.exitMarket(address(degenUSDC));
         }
     }
