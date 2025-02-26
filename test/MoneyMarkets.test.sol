@@ -116,7 +116,7 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
             degenWSX.redeemUnderlying(amount);
             vm.expectRevert();
             degenUSDC.redeemUnderlying(amount);
-            
+
         }
 
         function test_BorrowingAssets() public {
@@ -139,7 +139,47 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
         function test_ExitMarkets() public {
             comptroller.exitMarket(address(degenWSX));
-
             comptroller.exitMarket(address(degenUSDC));
+        }
+
+
+        function test_IamAbleToDepositUSDSavings() public {
+            
+        }
+
+        function test_IamAbleToDepositWSXSavings() public {
+
+        }
+
+        function test_IfThereIsUSDSavingsICanWithdraw() public {
+
+        }
+
+        function test_IfThereIsWSXSavingsICanWithdraw() public {
+            
+        }
+
+        function test_IfThereIsWSXSavingsICanWithdraw() public {
+            
+        }
+
+        function test_IfThereIsWSXSavingsICanWithdraw() public {
+            
+        }
+
+        function test_IfThereIsUSDSavingsICanBorrow() public {
+            
+        }
+
+        function test_IfThereIsWSXSavingsICanBorrow() public {
+            
+        }
+
+        function test_IfThereIsUSDSavingsICanRepay() public {
+            
+        }
+
+        function test_IfThereIsWSXSavingsICanRepay() public {
+            
         }
     }
