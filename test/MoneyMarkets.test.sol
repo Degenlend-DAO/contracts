@@ -91,18 +91,6 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
             CToken[] memory assetsIn = comptroller.getAssetsIn(address(this));
 
-            //  Let This contract have the ability to move degenWSX tokens.
-
-            //  Check if a project is collateral
-
-            // if (address(degenWSX) == comptroller.getAssetsIn(  ))
-            // {
-            //     // continue
-            // }
-            // else {
-            //     // fail
-            // }
-
             {
                 address[] memory marketsUSDC = new address[](1);
                 marketsUSDC[0] = address(degenUSDC);
@@ -128,6 +116,7 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
             degenWSX.redeemUnderlying(amount);
             vm.expectRevert();
             degenUSDC.redeemUnderlying(amount);
+            
         }
 
         function test_BorrowingAssets() public {
