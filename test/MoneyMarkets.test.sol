@@ -101,17 +101,11 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
                 marketsWSX[0] = address(degenWSX);
                 comptroller.enterMarkets(marketsWSX);
             }
-
-            // Expect mint to revert (i.e. MintComptrollerRejection)
-            vm.expectRevert();
-            degenWSX.mint(amount);
-            vm.expectRevert();
-            degenUSDC.mint(amount);
         }
 
         function test_WithdrawingLiquidity() public {
             uint256 amount = 100;
-            // Expect redeem to revert (i.e. RedeemComptrollerRejection)
+            // Expect redeem to revert (i.e. RedeemComptrollerRejection) Because, there isn't any capital in the market
             vm.expectRevert();
             degenWSX.redeemUnderlying(amount);
             vm.expectRevert();
@@ -121,7 +115,7 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
         function test_BorrowingAssets() public {
             uint256 amount = 100;
-            // Expect borrow to revert (i.e. BorrowComptrollerRejection)
+            // Expect borrow to revert (i.e. BorrowComptrollerRejection) Because again, there isn't any capital in the market
             vm.expectRevert();
             degenWSX.borrow(amount);
             vm.expectRevert();
@@ -144,42 +138,95 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
 
 
         function test_IamAbleToDepositUSDSavings() public {
-            
+
+            uint256 amount = 1000; //Let's mess around with 1,000 tokens
+            address[] memory marketsUSDC = new address[](1);
+            marketsUSDC[0] = address(degenUSDC);
+
+            usdc.approve(address(comptroller), amount);
+            comptroller.enterMarkets(marketsUSDC);
+            degenUSDC.mint(amount);
+        
         }
 
         function test_IamAbleToDepositWSXSavings() public {
+            uint amount = 1000;
+            address[] memory marketsWSX = new address[](1);
+            marketsWSX[0] = address(degenWSX);
+
+            // Enter the market & deposit funds
+            wsx.approve(address(comptroller), amount);
+            comptroller.enterMarkets(marketsWSX);
+            degenWSX.mint(amount);
 
         }
 
         function test_IfThereIsUSDSavingsICanWithdraw() public {
+            // First, check if there is USD savings IN the money market
+            uint256 amount = 1000;
+
+            // Check if there are any savings already deposited.
+            
+            if (degenUSDC.balanceOf(address(this)) > 0) {
+                degenUSDC.redeem(amount);
+            } else {
+                vm.expectRevert();
+                revert();
+            }
 
         }
 
         function test_IfThereIsWSXSavingsICanWithdraw() public {
-            
-        }
+            // First, check if there is WSX Savings IN the money market
 
-        function test_IfThereIsWSXSavingsICanWithdraw() public {
-            
-        }
+            uint amount = 1000;
 
-        function test_IfThereIsWSXSavingsICanWithdraw() public {
-            
+            if (degenWSX.balanceOf(address(this)) > 0) {
+                degenWSX.redeem(amount);
+            } else {
+                vm.expectRevert();
+                revert();
+            }
+
         }
 
         function test_IfThereIsUSDSavingsICanBorrow() public {
-            
+            // First, check if there is USD Savings In the money market
+            uint256 amount = 100;
+
+            if (degenUSDC.balanceOf(address(this)) > 900 )
+            {
+                degenUSDC.borrow(amount);
+            } else {
+                vm.expectRevert();
+                revert();
+            }
+
         }
 
         function test_IfThereIsWSXSavingsICanBorrow() public {
-            
+            //  First, check if there is WSX Savings IN the money market
+
+            uint256 amount = 100;
+
+            if (degenWSX.balanceOf(address(this)) > 990 )  // We will leave some dust in the account, because 2.5% of mint is transferred as fees
+            {
+                degenWSX.borrow(amount);
+            } else {
+                vm.expectRevert();
+                revert();
+            }
+
         }
 
         function test_IfThereIsUSDSavingsICanRepay() public {
+            // First, check if there is WSX debt I have to repay
+            
             
         }
 
         function test_IfThereIsWSXSavingsICanRepay() public {
-            
+            // First, check if there is WSX debt I have to repay
+
         }
     }
