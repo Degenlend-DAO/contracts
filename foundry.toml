@@ -6,3 +6,9 @@ tests = "./test"     # Path to your tests
 rpc_url = 'https://rpc.toronto.sx.technology'
 optimizer = true
 optimizer_runs = 200
+dotenv = ".env"
+# fork_block_number=
+
+[rpc_endpoints]
+sxMainnet = "https://rpc.sx.technology"
+sxTestnet = "${SX_NETWORK_TESTNET}"  # Keep this if you later decide to use testnet
