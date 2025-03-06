@@ -64,3 +64,5 @@ ignition/deployments/*
 .deploys/*
 
 out/*
+
+settings.json
