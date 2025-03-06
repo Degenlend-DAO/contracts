@@ -44,6 +44,13 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
             address indexed owner, address indexed spender, uint256 value
         );
 
+        // Event for transparency
+        event MintFeeCollected(
+            address indexed underlying,
+            address indexed minter,
+            uint feeAmount
+        );
+
         function setUp() public {
 
             // Fork SX Testnet
@@ -203,5 +210,83 @@ import { JumpRateModelV2 } from "../contracts/libraries/interest_rates/JumpRateM
             degenWSX.borrow(borrowAmount); // Should succeed now
             vm.stopPrank();
         }
+
+        function test_IfThereIsUSDSavingsICanRepay() public {
+        uint256 depositAmount = 1000 * 10**6;
+        uint256 borrowAmount = 100 * 10**6;
+        address[] memory markets = new address[](1);
+        markets[0] = address(degenUSDC);
+
+        vm.startPrank(me);
+        require(usdc.balanceOf(me) >= depositAmount + borrowAmount, "Insufficient USDC Balance");
+        usdc.approve(address(degenUSDC), depositAmount + borrowAmount);
+        comptroller.enterMarkets(markets);
+        degenUSDC.mint(depositAmount);
+        degenUSDC.borrow(borrowAmount);
+        uint256 borrowBalanceBefore = degenUSDC.borrowBalanceCurrent(me);
+        assertGt(borrowBalanceBefore, 0, "Borrow did not occur");
+        degenUSDC.repayBorrow(borrowAmount);
+        uint256 borrowBalanceAfter = degenUSDC.borrowBalanceCurrent(me);
+        assertEq(borrowBalanceAfter, 0, "Borrow not fully repaid");
+        vm.stopPrank();
+    }
+
+    function test_IfThereIsWSXSavingsICanRepay() public {
+        uint256 depositAmount = 1000 * 10**18;
+        uint256 borrowAmount = 100 * 10**18;
+        address[] memory markets = new address[](1);
+        markets[0] = address(degenWSX);
+
+        vm.startPrank(me);
+        require(wsx.balanceOf(me) >= depositAmount + borrowAmount, "Insufficient WSX Balance");
+        wsx.approve(address(degenWSX), depositAmount + borrowAmount);
+        comptroller.enterMarkets(markets);
+        degenWSX.mint(depositAmount);
+        degenWSX.borrow(borrowAmount);
+        uint256 borrowBalanceBefore = degenWSX.borrowBalanceCurrent(me);
+        assertGt(borrowBalanceBefore, 0, "Borrow did not occur");
+        degenWSX.repayBorrow(borrowAmount);
+        uint256 borrowBalanceAfter = degenWSX.borrowBalanceCurrent(me);
+        assertEq(borrowBalanceAfter, 0, "Borrow not fully repaid");
+        vm.stopPrank();
+    }
+
+    function test_MintFeeCollectionUSDC() public {
+        uint256 amount = 1000 * 10**6;
+        uint256 expectedFee = (amount * 250) / 10000; // 2.5% fee (250 basis points)
+        address[] memory markets = new address[](1);
+        markets[0] = address(degenUSDC);
+
+        vm.startPrank(me);
+        require(usdc.balanceOf(me) >= amount, "Insufficient USDC Balance");
+        usdc.approve(address(degenUSDC), amount);
+        comptroller.enterMarkets(markets);
+        
+        vm.expectEmit(true, true, true, true);
+        emit MintFeeCollected(address(usdc), me, expectedFee);
+        degenUSDC.mint(amount);
+        
+        // Note: collectedFees() may not be public; relying on event for now
+        vm.stopPrank();
+    }
+
+    function test_MintFeeCollectionWSX() public {
+        uint256 amount = 1000 * 10**18;
+        uint256 expectedFee = (amount * 250) / 10000; // 2.5% fee (250 basis points)
+        address[] memory markets = new address[](1);
+        markets[0] = address(degenWSX);
+
+        vm.startPrank(me);
+        require(wsx.balanceOf(me) >= amount, "Insufficient WSX Balance");
+        wsx.approve(address(degenWSX), amount);
+        comptroller.enterMarkets(markets);
+        
+        vm.expectEmit(true, true, true, true);
+        emit MintFeeCollected(address(wsx), me, expectedFee);
+        degenWSX.mint(amount);
+        
+        // Note: collectedFees() may not be public; relying on event for now
+        vm.stopPrank();
+    }
 
     }
