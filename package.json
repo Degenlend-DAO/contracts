@@ -3,7 +3,6 @@
   "version": "0.2.1",
   "description": "The Compound Money Market",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "compile": "./script/compile",
     "console": "if node -v | grep -E \"v(12|13)\" > /dev/null; then flags=\"-n --experimental-repl-await\"; fi; npx $flags saddle console",
@@ -34,7 +33,7 @@
     "@types/node": "^22.13.4",
     "bignumber.js": "9.0.0",
     "ethers": "^5.0.0",
-    "hardhat": "^2.22.15",
+    "hardhat": "^2.23.0",
     "jest-diff": "^26.4.2",
     "jest-junit": "^11.1.0",
     "prettier": "^1.19.0",
