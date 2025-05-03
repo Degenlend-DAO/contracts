@@ -17,7 +17,7 @@ export default buildModule("degenWSX", (m) => {
         "0x2D4e10Ee64CCF407C7F765B363348f7F62D2E06e", // Underlying WSX address
         "0xB078459124e55Eb9F2937c86c0Ec893ff4FF082b", // Unitroller address (proxy)
         "0x353e7839870604Edf9D766bEFb7929c95c215e00", // WSX interest rate model
-        "2000000000000000000000000000", // ✅ 2e28 (18 dec underly, 8 dec cToken)
+        "20000000000000000000000000000", // ✅ 2e28 (18 dec underly, 8 dec cToken)
         "Degen Wrapped SX", // Name
         "degenWSX", // Symbol
         8, // 8 Decimals (WSX has 18 decimals) is standard for cTokens
