@@ -1,0 +1,25 @@
+Deploying [ degenWSX ]
+
+Batch #1
+  Executed degenWSX#CErc20Immutable
+
+[ degenWSX ] successfully deployed 🚀
+
+Deployed Addresses
+
+degenWSX#CErc20Immutable - 0x77273a5B3779e339B990e4BACf0222fc04e93198
+
+Deploying [ degenUSDC ]
+
+Warning - previously executed futures are not in the module:
+ - degenWSX#CErc20Immutable
+
+Batch #1
+  Executed degenUSDC#CErc20Immutable
+
+[ degenUSDC ] successfully deployed 🚀
+
+Deployed Addresses
+
+degenWSX#CErc20Immutable - 0x77273a5B3779e339B990e4BACf0222fc04e93198
+degenUSDC#CErc20Immutable - 0xC8A9b9B44B7DC55351706d94Cd986B053C5f2EaD
