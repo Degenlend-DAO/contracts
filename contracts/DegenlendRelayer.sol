@@ -4,35 +4,41 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 interface ICERC20 {
-    function mint(uint mintAmount) external returns (uint);
-    function redeemUnderlying(uint redeemAmount) external returns (uint);
-    function borrow(uint borrowAmount) external returns (uint);
-    function repayBorrow(uint repayAmount) external returns (uint);
-    function underlying() external view returns (address);
+    function mint(uint256 mintAmount) external returns (uint256);
+    function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+    function borrow(uint256 borrowAmount) external returns (uint256);
+    function repayBorrow(uint256 repayAmount) external returns (uint256);
     function underlying() external view returns (address);
 }
 
 contract DegenLendRelayer is EIP712 {
-contract DegenLendRelayer is EIP712 {
     using ECDSA for bytes32;
 
-    bytes32 public constant MINT_TYPEHASH = 
-        keccak256("MintIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 public constant REDEEM_TYPEHASH = 
-        keccak256("RedeemIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 public constant BORROW_TYPEHASH = 
-        keccak256("BorrowIntent(address user, address cToken,uint256 amount, uint256 nonce,uint256 deadline)");
-    bytes32 public constant REPAY_TYPEHASH = 
-        keccak256("RepayIntent(address user, address cToken, uint256 amount, uint256 nonce, uint256 deadline)");
+    /* -------------------------------------------------------------------------- */
+    /*                                   Events                                   */
+    /* -------------------------------------------------------------------------- */
+    event MintExecuted(   address indexed user, address indexed cToken, uint256 amount, uint256 nonce);
+    event RedeemExecuted( address indexed user, address indexed cToken, uint256 amount, uint256 nonce);
+    event BorrowExecuted( address indexed user, address indexed cToken, uint256 amount, uint256 nonce);
+    event RepayExecuted(  address indexed user, address indexed cToken, uint256 amount, uint256 nonce);
+
+    /* -------------------------------------------------------------------------- */
+    /*                                EIP‑712 Data                                */
+    /* -------------------------------------------------------------------------- */
+    bytes32 public constant MINT_TYPEHASH   = keccak256("MintIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant REDEEM_TYPEHASH = keccak256("RedeemIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant BORROW_TYPEHASH = keccak256("BorrowIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant REPAY_TYPEHASH  = keccak256("RepayIntent(address user,address cToken,uint256 amount,uint256 nonce,uint256 deadline)");
 
     mapping(address => uint256) public nonces;
 
-    constructor() EIP712("DegenLendRelayer", "1") {}
+    constructor() EIP712("DegenLendRelayer", "647") {}
 
-    // ================== MINT/REDEEM ================== //
+    /* -------------------------------------------------------------------------- */
+    /*                              MINT / REDEEM                                 */
+    /* -------------------------------------------------------------------------- */
 
     function mintWithIntent(
         address user,
@@ -44,11 +50,13 @@ contract DegenLendRelayer is EIP712 {
         _verifyIntent(user, cToken, amount, deadline, signature, MINT_TYPEHASH);
         
         address underlying = ICERC20(cToken).underlying();
-        IERC20(underlying).transferFrom(user, address(this), amount);  // Pull underlying from user
-        IERC20(underlying).approve(cToken, amount);                  // Approve cToken to spend
-        
-        require(ICERC20(cToken).mint(amount) == 0, "Mint failed");    // Mint cTokens
-        IERC20(cToken).transfer(user, IERC20(cToken).balanceOf(address(this))); // Send cTokens to user
+        IERC20(underlying).transferFrom(user, address(this), amount);
+        IERC20(underlying).approve(cToken, amount);
+
+        require(ICERC20(cToken).mint(amount) == 0, "Mint failed");
+        IERC20(cToken).transfer(user, IERC20(cToken).balanceOf(address(this)));
+
+        emit MintExecuted(user, cToken, amount, nonces[user] - 1);
     }
 
     function redeemUnderlyingWithIntent(
@@ -60,14 +68,18 @@ contract DegenLendRelayer is EIP712 {
     ) external {
         _verifyIntent(user, cToken, amount, deadline, signature, REDEEM_TYPEHASH);
         
-        IERC20(cToken).transferFrom(user, address(this), amount);     // Pull cTokens from user
-        require(ICERC20(cToken).redeemUnderlying(amount) == 0, "Redeem failed"); // Redeem for underlying
-        
+        IERC20(cToken).transferFrom(user, address(this), amount);
+        require(ICERC20(cToken).redeemUnderlying(amount) == 0, "Redeem failed");
+
         address underlying = ICERC20(cToken).underlying();
-        IERC20(underlying).transfer(user, IERC20(underlying).balanceOf(address(this))); // Send underlying to user
+        IERC20(underlying).transfer(user, IERC20(underlying).balanceOf(address(this)));
+
+        emit RedeemExecuted(user, cToken, amount, nonces[user] - 1);
     }
 
-    // ================== BORROW/REPAY ================== //
+    /* -------------------------------------------------------------------------- */
+    /*                              BORROW / REPAY                                */
+    /* -------------------------------------------------------------------------- */
 
     function borrowWithIntent(
         address user,
@@ -78,13 +90,11 @@ contract DegenLendRelayer is EIP712 {
     ) external {
         _verifyIntent(user, cToken, amount, deadline, signature, BORROW_TYPEHASH);
         
-        // 1. Execute borrow (funds go to relayer)
         require(ICERC20(cToken).borrow(amount) == 0, "Borrow failed");
-        
-        // 2. Forward borrowed tokens to user
+
         address underlying = ICERC20(cToken).underlying();
         IERC20(underlying).transfer(user, amount);
-        
+
         emit BorrowExecuted(user, cToken, amount, nonces[user] - 1);
     }
 
@@ -98,13 +108,17 @@ contract DegenLendRelayer is EIP712 {
         _verifyIntent(user, cToken, amount, deadline, signature, REPAY_TYPEHASH);
         
         address underlying = ICERC20(cToken).underlying();
-        IERC20(underlying).transferFrom(user, address(this), amount);  // Pull underlying from user
-        IERC20(underlying).approve(cToken, amount);                   // Approve cToken to spend
-        
-        require(ICERC20(cToken).repayBorrow(amount) == 0, "Repay failed"); // Repay borrow
+        IERC20(underlying).transferFrom(user, address(this), amount);
+        IERC20(underlying).approve(cToken, amount);
+
+        require(ICERC20(cToken).repayBorrow(amount) == 0, "Repay failed");
+
+        emit RepayExecuted(user, cToken, amount, nonces[user] - 1);
     }
 
-    // ================== SHARED VERIFICATION ================== //
+    /* -------------------------------------------------------------------------- */
+    /*                             INTERNAL HELPERS                               */
+    /* -------------------------------------------------------------------------- */
 
     function _verifyIntent(
         address user,
@@ -115,16 +129,18 @@ contract DegenLendRelayer is EIP712 {
         bytes32 typeHash
     ) internal {
         require(block.timestamp <= deadline, "Intent expired");
-        
+
         uint256 currentNonce = nonces[user]++;
-        bytes32 structHash = keccak256(abi.encode(
-            typeHash,
-            user,
-            cToken,
-            amount,
-            currentNonce,
-            deadline
-        ));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                typeHash,
+                user,
+                cToken,
+                amount,
+                currentNonce,
+                deadline
+            )
+        );
 
         bytes32 digest = _hashTypedDataV4(structHash);
         address signer = digest.recover(signature);
